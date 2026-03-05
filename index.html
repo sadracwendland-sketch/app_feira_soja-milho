@@ -5,6 +5,10 @@
   <title>Desafio de Produtividade Stine 2026</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- PRECONNECT CDN -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1f7a3f">
@@ -17,11 +21,7 @@
 
   <!-- CSS -->
   <link rel="stylesheet" href="style.css">
-
-  <!-- XLSX -->
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-  
+   
 </head>
   
 <body class="bg-light">
@@ -257,28 +257,17 @@ População final: <span id="populacaoFinalMilhoText">—</span>
   }
 </script>
 
-  <!-- OFFLINE MODULE -->
-  <div id="offlineModule">...</div>
+  </div> <!-- fecha container -->
 
-</div> <!-- fecha container -->
-
-<!-- MODAL ADMINISTRATIVO (colar aqui) -->
+<!-- MODAL ADMINISTRATIVO -->
 <div class="modal fade" id="adminModal">
   ...
 </div>
 
-<script src="app.js"></script>
-
-<script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./service-worker.js");
-    });
-  }
-</script>
 
 </body>
 </html>
+
 
 
 
