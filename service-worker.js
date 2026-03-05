@@ -1,45 +1,74 @@
-const CACHE_NAME = "stine-pwa-v3";
+// ===============================
+// STINE PWA — SERVICE WORKER OTIMIZADO
+// ===============================
 
-const FILES_TO_CACHE = [
-  "/stine-pwa/",
-  "/stine-pwa/index.html",
-  "/stine-pwa/app.js",
-  "/stine-pwa/style.css",
-  "/stine-pwa/manifest.json",
-  "/stine-pwa/logo-stine.png",
-  "/stine-pwa/show_rural_coopavel.png",
-  "/stine-pwa/instagram.png"
+const CACHE_VERSION = "stine-pwa-v2";
+const STATIC_CACHE = CACHE_VERSION + "-static";
+
+// Arquivos essenciais (somente o necessário)
+const CORE_ASSETS = [
+  "./",
+  "./index.html",
+  "./app.js",
+  "./style.css",
+  "./manifest.json"
 ];
 
-// INSTALAÇÃO
+// ===============================
+// INSTALL — Cache básico
+// ===============================
 self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
-  );
   self.skipWaiting();
+  event.waitUntil(
+    caches.open(STATIC_CACHE)
+      .then(cache => cache.addAll(CORE_ASSETS))
+  );
 });
 
-// ATIVAÇÃO
+// ===============================
+// ACTIVATE — Limpa cache antigo
+// ===============================
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
-        keys.map(key => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
+        keys
+          .filter(key => key !== STATIC_CACHE)
+          .map(key => caches.delete(key))
       )
     )
   );
   self.clients.claim();
 });
 
-// FETCH — OFFLINE FIRST
+// ===============================
+// FETCH — Estratégia inteligente
+// ===============================
 self.addEventListener("fetch", event => {
+  const req = event.request;
+
+  // HTML → sempre tenta rede primeiro
+  if (req.mode === "navigate") {
+    event.respondWith(
+      fetch(req)
+        .then(res => {
+          const copy = res.clone();
+          caches.open(STATIC_CACHE).then(cache => cache.put(req, copy));
+          return res;
+        })
+        .catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // Outros arquivos → cache primeiro
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
+    caches.match(req).then(cached => {
+      return cached || fetch(req).then(res => {
+        const copy = res.clone();
+        caches.open(STATIC_CACHE).then(cache => cache.put(req, copy));
+        return res;
+      });
     })
   );
 });
