@@ -130,7 +130,74 @@ window.addEventListener("DOMContentLoaded", () => {
   carregarParametrosAdmin();
   atualizarStatusConexao();
 });
+// ===============================
+// ADMIN — ABRIR PAINEL
+// ===============================
+function abrirAdmin() {
+  if (!confirm("Acessar área administrativa?")) return;
 
+  setTimeout(function() {
+    var senha = prompt("Digite a senha administrativa:");
+    if (senha !== ADMIN_PASSWORD) {
+      alert("Senha incorreta.");
+      return;
+    }
+
+    // SOJA
+    var variedadeSoja = prompt("Variedade soja:");
+    if (!variedadeSoja) return;
+
+    var populacaoSoja = prompt("População final soja (mil plantas/ha):");
+    if (!populacaoSoja || isNaN(populacaoSoja)) {
+      alert("População soja inválida.");
+      return;
+    }
+
+    // MILHO
+    var hibridoMilho = prompt("Híbrido milho:");
+    if (!hibridoMilho) return;
+
+    var pmgMilho = prompt("PMG milho:");
+    if (!pmgMilho || isNaN(pmgMilho)) {
+      alert("PMG inválido.");
+      return;
+    }
+
+    var populacaoMilho = prompt("População final milho (mil plantas/ha):");
+    if (!populacaoMilho || isNaN(populacaoMilho)) {
+      alert("População milho inválida.");
+      return;
+    }
+
+    var dados = {
+      variedade_soja: variedadeSoja,
+      populacao_final_soja: populacaoSoja,
+      hibrido_milho: hibridoMilho,
+      pmg_milho: pmgMilho,
+      populacao_final_milho: populacaoMilho
+    };
+
+    localStorage.setItem(STORAGE_ADMIN, JSON.stringify(dados));
+
+    // Atualiza campos ocultos
+    if (variedadeSojaInput) variedadeSojaInput.value = variedadeSoja;
+    if (populacaoFinalSojaInput) populacaoFinalSojaInput.value = populacaoSoja;
+    if (hibridoMilhoInput) hibridoMilhoInput.value = hibridoMilho;
+    if (pmgMilhoInput) pmgMilhoInput.value = pmgMilho;
+    if (populacaoFinalMilhoInput) populacaoFinalMilhoInput.value = populacaoMilho;
+
+    // Atualiza textos na tela
+    if (variedadeSojaText) variedadeSojaText.innerText = variedadeSoja;
+    if (populacaoFinalSojaText) populacaoFinalSojaText.innerText = populacaoSoja;
+    if (hibridoMilhoText) hibridoMilhoText.innerText = hibridoMilho;
+    if (pmgMilhoText) pmgMilhoText.innerText = pmgMilho;
+    if (populacaoFinalMilhoText) populacaoFinalMilhoText.innerText = populacaoMilho;
+
+    alert("Parâmetros técnicos atualizados.");
+  }, 100);
+}
+
+window.abrirAdmin = abrirAdmin;
 // ===============================
 // ENVIO
 // ===============================
@@ -198,15 +265,19 @@ form.addEventListener("submit", async function (e) {
       ? form.fornecedor_semente.value
       : "",
 
-    variedade_evento: variedadeInput.value,
-    populacao_final: populacaoFinalInput.value,
+    // PARÂMETROS TÉCNICOS
+    variedade_soja: variedadeSojaInput?.value || "",
+    populacao_final_soja: populacaoFinalSojaInput?.value || "",
+    hibrido_milho: hibridoMilhoInput?.value || "",
+    pmg_milho: pmgMilhoInput?.value || "",
+    populacao_final_milho: populacaoFinalMilhoInput?.value || "",
 
     // SOJA
     vagens_planta: form.vagens.value,
     graos_vagem: form.graos.value,
     produtividade_sc_ha: form.produtividade.value,
 
-    // MILHO (NOVO)
+    // MILHO
     graos_espiga_milho: form.graos_milho ? form.graos_milho.value : "",
     produtividade_milho_sc_ha: form.produtividade_milho ? form.produtividade_milho.value : ""
   };
@@ -244,7 +315,6 @@ form.addEventListener("submit", async function (e) {
   limparFormularioPreservandoAdmin();
   atualizarStatusConexao();
 });
-
 // ===============================
 // ENVIO AUTOMÁTICO (COM ALERT DE SUCESSO)
 // ===============================
