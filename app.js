@@ -247,8 +247,8 @@ form.addEventListener("submit", async function (e) {
   var payload = {
     DataHora: new Date().toISOString(),
 
-    Segue_Redes: form.segue ? form.segue.value : "",
-    Aceite_LGPD: form.lgpd && form.lgpd.checked ? "Sim" : "Não",
+    Segue_Redes: form.querySelector('input[name="segue"]:checked')?.value || "",
+Aceite_LGPD: form.querySelector('input[name="lgpd"]:checked') ? "Sim" : "Não",
 
     Nome: form.nome.value,
     Cargo: form.cargo ? form.cargo.value : "",
