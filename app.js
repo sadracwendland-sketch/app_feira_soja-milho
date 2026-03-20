@@ -204,6 +204,7 @@ window.abrirAdmin = abrirAdmin;
 async function enviarPayload(payload) {
   var r = await fetch(AUTOMATE_URL, {
     method: "POST",
+    mode: "cors",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
   });
