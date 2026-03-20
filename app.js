@@ -2,7 +2,7 @@
 // CONFIGURAÇÕES
 // ===============================
 const AUTOMATE_URL =
-  "https://defaultc18e5a39b8224257bd2a34c15bd7b4.77.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/8d7d7c22d76e4bab80ccb6c69ec213bd/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=CiMry-yaLyxnARZq1XlAZMDSjeJ7zE9szZ0tjbW-3zw";
+  "https://hook.us2.make.com/c52caeumvwcwsqeafgoi69c5h1tm2f7g";
 
 const ADMIN_PASSWORD = "stine2026";
 
