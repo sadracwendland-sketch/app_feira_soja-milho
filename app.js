@@ -274,9 +274,9 @@ form.addEventListener("submit", async function (e) {
     populacao_final_milho: populacaoFinalMilhoInput?.value || "",
 
     // SOJA
-    vagens_planta: form.vagens.value,
-    graos_vagem: form.graos.value,
-    produtividade_sc_ha: form.produtividade.value,
+    vagens_planta: form.vagens_soja.value,
+    graos_vagem: form.graos_soja.value,
+    produtividade_sc_ha: form.produtividade_soja.value,
 
     // MILHO
     graos_espiga_milho: form.graos_milho ? form.graos_milho.value : "",
