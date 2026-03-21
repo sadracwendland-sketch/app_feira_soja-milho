@@ -1,8 +1,8 @@
 {
-  "name": "Sorteio Show Rural 2026",
-  "short_name": "Stine PWA",
-  "start_url": "/stine-pwa/index.html",
-  "scope": "/stine-pwa/",
+  "name": "Feira Soja e Milho 2026",
+  "short_name": "Stine Feira",
+  "start_url": "/app_feira_soja-milho/index.html?v=2",
+  "scope": "/app_feira_soja-milho/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1f7a3f",
