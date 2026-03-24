@@ -192,19 +192,19 @@ População final: <span id="populacaoFinalMilhoText">—</span>
 </div>
 
 <!-- CAMPOS OCULTOS -->
-<input type="hidden" id="variedade_soja">
-<input type="hidden" id="populacao_final_soja">
-<input type="hidden" id="hibrido_milho">
-<input type="hidden" id="PMG_milho">
-<input type="hidden" id="populacao_final_milho">
+<input type="hidden" id="variedade_soja" name="variedade_soja">
+<input type="hidden" id="populacao_final_soja" name="populacao_final_soja">
+<input type="hidden" id="hibrido_milho" name="hibrido_milho">
+<input type="hidden" id="pmg_milho" name="pmg_milho">
+<input type="hidden" id="populacao_final_milho" name="populacao_final_milho">
 
 <!-- ESTIMATIVA SOJA -->
 <div class="card mb-3">
 <div class="card-header">Estimativa soja</div>
 <div class="card-body">
-<input class="form-control mb-2" name="vagens_soja" type="number" placeholder="Vagens/planta" required>
-<input class="form-control mb-2" name="graos_soja" type="number" placeholder="Grãos/planta" required>
-<input class="form-control" name="produtividade_soja" type="number" placeholder="Produtividade (sc/ha)" required>
+<input class="form-control mb-2" id="vagens" name="vagens" type="number" placeholder="Vagens/planta" required>
+<input class="form-control mb-2" id="graos" name="graos" type="number" placeholder="Grãos/planta" required>
+<input class="form-control" id="produtividade" name="produtividade" type="number" step="0.1" placeholder="Produtividade (sc/ha)" required>
 </div>
 </div>
 
@@ -212,8 +212,8 @@ População final: <span id="populacaoFinalMilhoText">—</span>
 <div class="card mb-3">
 <div class="card-header">Estimativa milho</div>
 <div class="card-body">
-<input class="form-control mb-2" name="graos_milho" type="number" placeholder="Grãos por espiga (média)" required>
-<input class="form-control" name="produtividade_milho" type="number" placeholder="Produtividade (sc/ha)" required>
+<input class="form-control mb-2" id="graos_milho" name="graos_milho" type="number" placeholder="Grãos por espiga (média)" required>
+<input class="form-control" id="produtividade_milho" name="produtividade_milho" type="number" step="0.1" placeholder="Produtividade (sc/ha)" required>
 </div>
 </div>
 
