@@ -199,18 +199,28 @@ function abrirAdmin() {
 
 window.abrirAdmin = abrirAdmin;
 // ===============================
-// ENVIO
+// ENVIO (CORRIGIDO)
 // ===============================
 async function enviarPayload(payload) {
-  var r = await fetch(AUTOMATE_URL, {
-    method: "POST",
-    mode: "cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
 
-  if (!r.ok) {
-    throw new Error("Erro HTTP " + r.status);
+  try {
+    const r = await fetch(AUTOMATE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+      keepalive: true
+    });
+
+    clearTimeout(timeout);
+    return true;
+
+  } catch (erro) {
+    clearTimeout(timeout);
+    console.error("Erro real de envio:", erro);
+    return false;
   }
 }
 
@@ -248,7 +258,7 @@ form.addEventListener("submit", async function (e) {
     DataHora: new Date().toISOString(),
 
     Segue_Redes: form.querySelector('input[name="segue"]:checked')?.value || "",
-Aceite_LGPD: form.querySelector('input[name="lgpd"]:checked') ? "Sim" : "Não",
+    Aceite_LGPD: form.querySelector('input[name="lgpd"]:checked') ? "Sim" : "Não",
 
     Nome: form.nome.value,
     Cargo: form.cargo ? form.cargo.value : "",
@@ -293,24 +303,28 @@ Aceite_LGPD: form.querySelector('input[name="lgpd"]:checked') ? "Sim" : "Não",
 
   var fila = getFila();
 
-  try {
-    if (navigator.onLine) {
-      await enviarPayload(payload);
-      enviados.push(hash);
-      localStorage.setItem(STORAGE_ENVIADOS, JSON.stringify(enviados));
-      salvarLog("enviado", payload, "ok");
-      alert("Participação enviada com sucesso!");
-    } else {
-      fila.push({ hash: hash, payload: payload });
-      setFila(fila);
-      salvarLog("salvo_offline", payload, "pendente");
-      alert("Sem internet. Dados salvos localmente.");
-    }
-  } catch (erro) {
+  // 🔥 BLOCO CORRIGIDO (SUBSTITUI TRY/CATCH)
+  var sucesso = false;
+
+  if (navigator.onLine) {
+    sucesso = await enviarPayload(payload);
+  }
+
+  if (sucesso) {
+    enviados.push(hash);
+    localStorage.setItem(STORAGE_ENVIADOS, JSON.stringify(enviados));
+    salvarLog("enviado", payload, "ok");
+    alert("Participação enviada com sucesso!");
+  } else {
     fila.push({ hash: hash, payload: payload });
     setFila(fila);
     salvarLog("salvo_offline", payload, "pendente");
-    alert("Falha no envio. Registro salvo offline.");
+
+    if (!navigator.onLine) {
+      alert("Sem internet. Dados salvos localmente.");
+    } else {
+      alert("Falha no envio. Registro salvo offline.");
+    }
   }
 
   limparFormularioPreservandoAdmin();
@@ -332,21 +346,19 @@ async function enviarFilaAutomatico() {
   for (var i = 0; i < fila.length; i++) {
     var item = fila[i];
 
-    try {
-      // garante campos de milho para registros antigos
-      if (!item.payload.graos_espiga_milho) item.payload.graos_espiga_milho = "";
-      if (!item.payload.produtividade_milho_sc_ha) item.payload.produtividade_milho_sc_ha = "";
+  // garante campos de milho para registros antigos
+if (!item.payload.graos_espiga_milho) item.payload.graos_espiga_milho = "";
+if (!item.payload.produtividade_milho_sc_ha) item.payload.produtividade_milho_sc_ha = "";
 
-      await enviarPayload(item.payload);
+var sucesso = await enviarPayload(item.payload);
 
-      enviados.push(item.hash);
-      salvarLog("enviado", item.payload, "ok");
-      qtdEnviados++;
-
-    } catch (erro) {
-      restante.push(item);
-    }
-  }
+if (sucesso) {
+  enviados.push(item.hash);
+  salvarLog("enviado", item.payload, "ok");
+  qtdEnviados++;
+} else {
+  restante.push(item);
+}
 
   localStorage.setItem(STORAGE_ENVIADOS, JSON.stringify(enviados));
   setFila(restante);
@@ -385,18 +397,18 @@ async function sincronizarOffline() {
   for (var i = 0; i < fila.length; i++) {
     var item = fila[i];
 
-    try {
-      // garante campos de milho para registros antigos
-      if (!item.payload.graos_espiga_milho) item.payload.graos_espiga_milho = "";
-      if (!item.payload.produtividade_milho_sc_ha) item.payload.produtividade_milho_sc_ha = "";
+    // 🔥 TRECHO CORRIGIDO (ANTES ERA TRY/CATCH)
+    // garante campos de milho para registros antigos
+    if (!item.payload.graos_espiga_milho) item.payload.graos_espiga_milho = "";
+    if (!item.payload.produtividade_milho_sc_ha) item.payload.produtividade_milho_sc_ha = "";
 
-      await enviarPayload(item.payload);
+    var sucesso = await enviarPayload(item.payload);
 
+    if (sucesso) {
       enviados.push(item.hash);
       salvarLog("enviado", item.payload, "ok");
       qtdEnviados++;
-
-    } catch (erroEnvio) {
+    } else {
       restante.push(item);
     }
   }
