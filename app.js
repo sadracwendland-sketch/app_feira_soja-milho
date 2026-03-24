@@ -19,7 +19,7 @@ const form = document.getElementById("stineForm");
 const variedadeSojaInput = document.getElementById("variedade_soja");
 const populacaoFinalSojaInput = document.getElementById("populacao_final_soja");
 const hibridoMilhoInput = document.getElementById("hibrido_milho");
-const pmgMilhoInput = document.getElementById("PMG_milho");
+const pmgMilhoInput = document.getElementById("pmg_milho");
 const populacaoFinalMilhoInput = document.getElementById("populacao_final_milho");
 
 // Textos exibidos
@@ -137,7 +137,10 @@ window.addEventListener("DOMContentLoaded", () => {
 async function enviarPayload(payload) {
   var r = await fetch(AUTOMATE_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
     body: JSON.stringify(payload)
   });
 
@@ -150,103 +153,105 @@ async function enviarPayload(payload) {
 // LIMPEZA DO FORMULÁRIO
 // ===============================
 function limparFormularioPreservandoAdmin() {
-  // parâmetros soja
-  var variedade = variedadeInput.value;
-  var populacao = populacaoFinalInput.value;
 
-  // parâmetros milho
+  var variedade = variedadeSojaInput.value;
+  var populacao = populacaoFinalSojaInput.value;
+
   var graosMilho = form.graos_milho ? form.graos_milho.value : "";
   var produtividadeMilho = form.produtividade_milho ? form.produtividade_milho.value : "";
 
-  // limpa formulário
   form.reset();
 
-  // restaura parâmetros soja (admin)
-  variedadeInput.value = variedade;
-  populacaoFinalInput.value = populacao;
+  variedadeSojaInput.value = variedade;
+  populacaoFinalSojaInput.value = populacao;
 
-  variedadeText.innerText = variedade;
-  populacaoFinalText.innerText = populacao;
+  variedadeSojaText.innerText = variedade;
+  populacaoFinalSojaText.innerText = populacao;
 
-  // restaura milho (se quiser manter após envio)
   if (form.graos_milho) form.graos_milho.value = graosMilho;
   if (form.produtividade_milho) form.produtividade_milho.value = produtividadeMilho;
 }
-
+  
 // ===============================
 // SUBMIT
 // ===============================
-form.addEventListener("submit", async function (e) {
-  e.preventDefault();
+if (form) {
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-  var payload = {
-    DataHora: new Date().toISOString(),
+    var payload = {
+      DataHora: new Date().toISOString(),
 
-    Segue_Redes: form.segue ? form.segue.value : "",
-    Aceite_LGPD: form.lgpd && form.lgpd.checked ? "Sim" : "Não",
+      Segue_Redes: form.segue ? form.segue.value : "",
+      Aceite_LGPD: form.lgpd && form.lgpd.checked ? "Sim" : "Não",
 
-    Nome: form.nome.value,
-    Cargo: form.cargo ? form.cargo.value : "",
-    empresa_fazenda: form.empresa ? form.empresa.value : "",
+      Nome: form.nome.value,
+      Cargo: form.cargo ? form.cargo.value : "",
+      empresa_fazenda: form.empresa ? form.empresa.value : "",
 
-    Telefone: form.telefone.value,
-    Email: form.email.value,
-    Cidade: form.cidade.value,
-    UF: form.uf.value,
-    Area_Soja_ha: form.area.value,
+      Telefone: form.telefone.value,
+      Email: form.email.value,
+      Cidade: form.cidade.value,
+      UF: form.uf.value,
+      Area_Soja_ha: form.area.value,
 
-    planta_stine: form.planta_stine ? form.planta_stine.value : "",
-    qual_stine: form.qual_stine ? form.qual_stine.value : "",
-    fornecedor_semente: form.fornecedor_semente
-      ? form.fornecedor_semente.value
-      : "",
+      planta_stine: form.planta_stine ? form.planta_stine.value : "",
+      qual_stine: form.qual_stine ? form.qual_stine.value : "",
+      fornecedor_semente: form.fornecedor_semente ? form.fornecedor_semente.value : "",
 
-    variedade_evento: variedadeInput.value,
-    populacao_final: populacaoFinalInput.value,
+      // SOJA
+      variedade_soja: variedadeSojaInput.value,
+      populacao_final_soja: populacaoFinalSojaInput.value,
+      vagens_planta: form.vagens.value,
+      graos_vagem: form.graos.value,
+      produtividade_sc_ha: form.produtividade.value,
 
-    // SOJA
-    vagens_planta: form.vagens.value,
-    graos_vagem: form.graos.value,
-    produtividade_sc_ha: form.produtividade.value,
+      // MILHO
+      graos_espiga_milho: form.graos_milho ? form.graos_milho.value : "",
+      produtividade_milho_sc_ha: form.produtividade_milho ? form.produtividade_milho.value : ""
+    };
 
-    // MILHO (NOVO)
-    graos_espiga_milho: form.graos_milho ? form.graos_milho.value : "",
-    produtividade_milho_sc_ha: form.produtividade_milho ? form.produtividade_milho.value : ""
-  };
+    var hash = gerarHashRegistro(payload);
+    var enviados = JSON.parse(localStorage.getItem(STORAGE_ENVIADOS) || "[]");
 
-  var hash = gerarHashRegistro(payload);
-  var enviados = JSON.parse(localStorage.getItem(STORAGE_ENVIADOS) || "[]");
+    if (enviados.includes(hash)) {
+      alert("Este registro já foi enviado.");
+      return;
+    }
 
-  if (enviados.includes(hash)) {
-    alert("Este registro já foi enviado.");
-    return;
-  }
+    var fila = getFila();
 
-  var fila = getFila();
+    try {
+      if (navigator.onLine) {
+        console.log("Payload enviado:", payload);
+        await enviarPayload(payload);
 
-  try {
-    if (navigator.onLine) {
-      await enviarPayload(payload);
-      enviados.push(hash);
-      localStorage.setItem(STORAGE_ENVIADOS, JSON.stringify(enviados));
-      salvarLog("enviado", payload, "ok");
-      alert("Participação enviada com sucesso!");
-    } else {
+        enviados.push(hash);
+        localStorage.setItem(STORAGE_ENVIADOS, JSON.stringify(enviados));
+
+        salvarLog("enviado", payload, "ok");
+        alert("Participação enviada com sucesso!");
+      } else {
+        fila.push({ hash: hash, payload: payload });
+        setFila(fila);
+
+        salvarLog("salvo_offline", payload, "pendente");
+        alert("Sem internet. Dados salvos localmente.");
+      }
+    } catch (erro) {
+      console.error("Erro no envio (submit):", erro);
+
       fila.push({ hash: hash, payload: payload });
       setFila(fila);
-      salvarLog("salvo_offline", payload, "pendente");
-      alert("Sem internet. Dados salvos localmente.");
-    }
-  } catch (erro) {
-    fila.push({ hash: hash, payload: payload });
-    setFila(fila);
-    salvarLog("salvo_offline", payload, "pendente");
-    alert("Falha no envio. Registro salvo offline.");
-  }
 
-  limparFormularioPreservandoAdmin();
-  atualizarStatusConexao();
-});
+      salvarLog("salvo_offline", payload, "pendente");
+      alert("Falha no envio. Registro salvo offline.");
+    }
+
+    limparFormularioPreservandoAdmin();
+    atualizarStatusConexao();
+  });
+}
 
 // ===============================
 // ENVIO AUTOMÁTICO (COM ALERT DE SUCESSO)
@@ -269,15 +274,18 @@ async function enviarFilaAutomatico() {
       if (!item.payload.graos_espiga_milho) item.payload.graos_espiga_milho = "";
       if (!item.payload.produtividade_milho_sc_ha) item.payload.produtividade_milho_sc_ha = "";
 
-      await enviarPayload(item.payload);
+     await enviarPayload(item.payload);
+await new Promise(r => setTimeout(r, 300));
 
       enviados.push(item.hash);
       salvarLog("enviado", item.payload, "ok");
       qtdEnviados++;
 
-    } catch (erro) {
-      restante.push(item);
-    }
+    } 
+    catch (erro) {
+  console.error("Erro no envio da fila automática:", erro, item.payload);
+  restante.push(item);
+}
   }
 
   localStorage.setItem(STORAGE_ENVIADOS, JSON.stringify(enviados));
@@ -323,14 +331,17 @@ async function sincronizarOffline() {
       if (!item.payload.produtividade_milho_sc_ha) item.payload.produtividade_milho_sc_ha = "";
 
       await enviarPayload(item.payload);
+      await new Promise(r => setTimeout(r, 300));
 
       enviados.push(item.hash);
       salvarLog("enviado", item.payload, "ok");
       qtdEnviados++;
 
-    } catch (erroEnvio) {
-      restante.push(item);
-    }
+    } 
+    catch (erroEnvio) {
+  console.error("Erro na sincronização manual:", erroEnvio, item.payload);
+  restante.push(item);
+}
   }
 
   localStorage.setItem(STORAGE_ENVIADOS, JSON.stringify(enviados));
