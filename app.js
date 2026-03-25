@@ -102,7 +102,7 @@ function gerarHashRegistro(payload) {
 // ADMIN
 // ===============================
 function abrirAdmin() {
-  var senha = prompt("stine2026");
+  var senha = prompt("Digite a senha:");
 
   if (senha !== ADMIN_PASSWORD) {
     alert("Senha incorreta");
