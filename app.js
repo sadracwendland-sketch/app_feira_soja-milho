@@ -101,6 +101,53 @@ function gerarHashRegistro(payload) {
 // ===============================
 // ADMIN
 // ===============================
+function abrirAdmin() {
+  var senha = prompt("stine2026");
+
+  if (senha !== ADMIN_PASSWORD) {
+    alert("Senha incorreta");
+    return;
+  }
+
+  var modalEl = document.getElementById("adminModal");
+
+  if (!modalEl) {
+    alert("Modal não encontrado");
+    return;
+  }
+
+  var modal = new bootstrap.Modal(modalEl);
+  modal.show();
+
+  // Preenche os campos com valores já salvos
+  var dados = JSON.parse(localStorage.getItem(STORAGE_ADMIN) || "{}");
+
+  document.getElementById("admin_variedade_soja").value = dados.variedade_soja || "";
+  document.getElementById("admin_pop_soja").value = dados.populacao_final_soja || "";
+  document.getElementById("admin_hibrido_milho").value = dados.hibrido_milho || "";
+  document.getElementById("admin_pmg_milho").value = dados.pmg_milho || "";
+  document.getElementById("admin_pop_milho").value = dados.populacao_final_milho || "";
+}
+
+function salvarAdmin() {
+  var dados = {
+    variedade_soja: document.getElementById("admin_variedade_soja").value,
+    populacao_final_soja: document.getElementById("admin_pop_soja").value,
+    hibrido_milho: document.getElementById("admin_hibrido_milho").value,
+    pmg_milho: document.getElementById("admin_pmg_milho").value,
+    populacao_final_milho: document.getElementById("admin_pop_milho").value
+  };
+
+  localStorage.setItem(STORAGE_ADMIN, JSON.stringify(dados));
+
+  carregarParametrosAdmin();
+
+  alert("Parâmetros salvos com sucesso!");
+
+  var modal = bootstrap.Modal.getInstance(document.getElementById("adminModal"));
+  if (modal) modal.hide();
+}
+
 function carregarParametrosAdmin() {
   var dados = JSON.parse(localStorage.getItem(STORAGE_ADMIN) || "{}");
 
