@@ -259,13 +259,13 @@ População final: <span id="populacaoFinalMilhoText">—</span>
 </script>
 
 <!-- MODAL ADMINISTRATIVO -->
-<div class="modal fade" id="adminModal" tabindex="-1">
+<div class="modal fade" id="adminModal" tabindex="-1" style="display:none;">
   <div class="modal-dialog">
     <div class="modal-content">
 
       <div class="modal-header">
         <h5 class="modal-title">Parâmetros técnicos</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" onclick="fecharAdmin()"></button>
       </div>
 
       <div class="modal-body">
@@ -290,6 +290,9 @@ População final: <span id="populacaoFinalMilhoText">—</span>
       <div class="modal-footer">
         <button type="button" class="btn btn-success" onclick="salvarAdmin()">
           Salvar parâmetros
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="fecharAdmin()">
+          Fechar
         </button>
       </div>
 
