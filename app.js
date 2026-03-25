@@ -465,3 +465,23 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 });
+
+// ===============================
+// ajuste falha no Android
+// ===============================
+
+function fecharAdmin() {
+  var modal = document.getElementById("adminModal");
+
+  // tenta fechar via Bootstrap
+  if (typeof bootstrap !== "undefined") {
+    var instance = bootstrap.Modal.getInstance(modal);
+    if (instance) {
+      instance.hide();
+      return;
+    }
+  }
+
+  // fallback Android (sem bootstrap)
+  modal.style.display = "none";
+}
